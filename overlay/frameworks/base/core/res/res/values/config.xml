@@ -411,4 +411,7 @@
         <item>10</item>
     </integer-array>
 
+    <!-- Flag indicating whether we should enable smart battery. -->
+     <bool name="config_smart_battery_available">true</bool>
+
 </resources>
