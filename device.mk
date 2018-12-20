@@ -242,7 +242,8 @@ PRODUCT_COPY_FILES += \
 
 # ConfigPanel
 PRODUCT_PACKAGES += \
-    ConfigPanel
+    ConfigPanel \
+    XiaomiDoze
 
 # Connectivity Engine support (CNE)
 PRODUCT_PACKAGES += \
