@@ -27,6 +27,7 @@ import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
 import org.lineageos.internal.util.FileUtils;
+import org.lineageos.settings.device.dirac.DiracUtils;
 
 public class Startup extends BroadcastReceiver {
 
@@ -43,6 +44,7 @@ public class Startup extends BroadcastReceiver {
             TorchWhiteBrightnessPreference.restore(context);
             VibratorStrengthPreference.restore(context);
             DisplayCalibration.restore(context);
+            new DiracUtils(context).onBootCompleted();
 
             // Disable button settings if needed
             if (!hasButtonNodes()) {

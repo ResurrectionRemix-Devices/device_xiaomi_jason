@@ -1,3 +1,6 @@
+# Dirac
+persist.audio.dirac.                                          u:object_r:dirac_prop:s0
+
 # adsprpc
 fastrpc.                            u:object_r:adsprpc_prop:s0
 
