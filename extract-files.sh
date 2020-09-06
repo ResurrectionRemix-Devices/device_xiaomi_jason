@@ -18,72 +18,23 @@
 
 set -e
 
-DEVICE=jason
-VENDOR=xiaomi
+export DEVICE=jason
+export DEVICE_COMMON=sdm660-common
+export VENDOR=xiaomi
 
-# Load extract_utils and do some sanity checks
+export DEVICE_BRINGUP_YEAR=2017
+
+./../../$VENDOR/$DEVICE_COMMON/extract-files.sh "$@"
+
 MY_DIR="${BASH_SOURCE%/*}"
 if [[ ! -d "$MY_DIR" ]]; then MY_DIR="$PWD"; fi
 
-LINEAGE_ROOT="$MY_DIR"/../../..
-
-HELPER="$LINEAGE_ROOT"/vendor/lineage/build/tools/extract_utils.sh
-if [ ! -f "$HELPER" ]; then
-    echo "Unable to find helper script at $HELPER"
-    exit 1
-fi
-. "$HELPER"
-
-# Default to sanitizing the vendor folder before extraction
-CLEAN_VENDOR=true
-
-while [ "$1" != "" ]; do
-    case $1 in
-        -n | --no-cleanup )     CLEAN_VENDOR=false
-                                ;;
-        -s | --section )        shift
-                                SECTION=$1
-                                CLEAN_VENDOR=false
-                                ;;
-        * )                     SRC=$1
-                                ;;
-    esac
-    shift
-done
-
-if [ -z "$SRC" ]; then
-    SRC=adb
-fi
-
-# Initialize the helper
-setup_vendor "$DEVICE" "$VENDOR" "$LINEAGE_ROOT" false "$CLEAN_VENDOR"
-
-extract "$MY_DIR"/proprietary-files.txt "$SRC" "$SECTION"
-
-DEVICE_BLOB_ROOT="$LINEAGE_ROOT"/vendor/"$VENDOR"/"$DEVICE"/proprietary
-
-sed -i \
-    's/\/system\/etc\//\/vendor\/etc\//g' \
-    "$DEVICE_BLOB_ROOT"/vendor/lib/libmmcamera2_sensor_modules.so
+DEVICE_BLOB_ROOT="$MY_DIR"/../../../vendor/"$VENDOR"/"$DEVICE"/proprietary
 
 sed -i 's/\x1e\x40\x9a\x99\x99\x99\x99\x99\x3b\x40\x10/\x1e\x40\x9a\x99\x99\x99\x99\x99\x3b\x40\x01/' \
     "$DEVICE_BLOB_ROOT"/vendor/lib/libmmcamera_jason_s5k3p8sp_sunny.so
 
 patchelf --remove-needed libandroid.so "$DEVICE_BLOB_ROOT"/vendor/lib/libmmcamera2_stats_modules.so
 patchelf --remove-needed libandroid.so "$DEVICE_BLOB_ROOT"/vendor/lib/libmpbase.so
-patchelf --remove-needed libandroid_runtime.so "$DEVICE_BLOB_ROOT"/vendor/bin/mlipayd
-patchelf --remove-needed libandroid_runtime.so "$DEVICE_BLOB_ROOT"/vendor/lib64/libmlipay.so
 patchelf --remove-needed libgui.so "$DEVICE_BLOB_ROOT"/vendor/lib/libmmcamera_ppeiscore.so
 patchelf --remove-needed libgui.so "$DEVICE_BLOB_ROOT"/vendor/lib/libmmcamera2_stats_modules.so
-patchelf --remove-needed libmedia.so "$DEVICE_BLOB_ROOT"/vendor/lib64/lib-dplmedia.so
-patchelf --remove-needed vendor.xiaomi.hardware.mtdservice@1.0.so "$DEVICE_BLOB_ROOT"/vendor/bin/mlipayd
-patchelf --remove-needed vendor.xiaomi.hardware.mtdservice@1.0.so "$DEVICE_BLOB_ROOT"/vendor/lib64/libmlipay.so
-
-sed -i "s|\/data\/vendor\/radio\/modem_config\/mcfg_hw\/|\/data\/vendor\/modem_config\/mcfg_hw\/\x00\x00\x00\x00\x00\x00|g" \
-    "$DEVICE_BLOB_ROOT"/vendor/lib64/libril-qc-hal-qmi.so
-sed -i "s|\/data\/vendor\/radio\/modem_config\/mcfg_sw\/|\/data\/vendor\/modem_config\/mcfg_sw\/\x00\x00\x00\x00\x00\x00|g" \
-    "$DEVICE_BLOB_ROOT"/vendor/lib64/libril-qc-hal-qmi.so
-sed -i "s|\/data\/vendor\/radio\/modem_config\/|\/data\/vendor\/modem_config\/\x00\x00\x00\x00\x00\x00|g" \
-    "$DEVICE_BLOB_ROOT"/vendor/lib64/libril-qc-hal-qmi.so
-
-"$MY_DIR"/setup-makefiles.sh
