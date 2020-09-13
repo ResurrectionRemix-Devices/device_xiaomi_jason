@@ -3,18 +3,18 @@
     "remote": "github",
     "repository": "LineageOS/android_kernel_xiaomi_jason",
     "target_path": "kernel/xiaomi/jason",
-    "branch": "lineage-16.0"
+    "branch": "lineage-17.1"
   },
   {
-    "remote": "github",
+    "remote": "gitlab",
     "repository": "TheMuppets/proprietary_vendor_xiaomi",
     "target_path": "vendor/xiaomi",
-    "branch": "lineage-16.0"
+    "branch": "lineage-17.1"
   },
   {
     "remote": "github",
     "repository": "LineageOS/android_packages_resources_devicesettings",
     "target_path": "packages/resources/devicesettings",
-    "branch": "lineage-16.0"
+    "branch": "lineage-17.1"
   }
 ]
